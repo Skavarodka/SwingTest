@@ -15,7 +15,7 @@ public class Board extends JPanel implements ActionListener {
     private final int PSTART_Y = 29;
     private final int B_WIDTH = 400;
     private final int B_HEIGHT = 300;
-    private final int DELAY = 15;
+    private final int DELAY = 16;
     private Timer timer;
     private Player1 player1;
     private Boss boss;
@@ -139,6 +139,17 @@ public class Board extends JPanel implements ActionListener {
 
             enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
         }
+
+        if (boss.getX() == 350) {
+
+            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
+        }
+
+        if (boss.getX() == 100) {
+
+            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
+        }
+
         EnemyMissile.updateEnMiss(enemyMissile);
         checkCollisions();
 
