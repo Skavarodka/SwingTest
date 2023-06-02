@@ -1,5 +1,7 @@
 package testSwingGameFromZetCod.myGame;
 
+import java.awt.*;
+
 public class Missile extends Sprite {
 
     private final int BOARD_WIDTH = 390;
@@ -41,6 +43,23 @@ public class Missile extends Sprite {
         if (x > BOARD_WIDTH) {
 
             visible = false;
+        }
+    }
+
+    public static void updateMiss(Missile missile) {
+
+        if (missile.isVisible()) {
+
+            missile.moveRight();
+        }
+    }
+
+    public static void drawMissile(Graphics g, Missile missile) {
+
+        if (missile.isVisible()) {
+
+            g.drawImage(missile.getImage(), missile.getX(),
+                    missile.getY(), null);
         }
     }
 }

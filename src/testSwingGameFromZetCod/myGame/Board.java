@@ -13,19 +13,19 @@ public class Board extends JPanel implements ActionListener {
 
     private final int PSTART_X = 30;
     private final int PSTART_Y = 29;
-    private Boss boss;
     private final int B_WIDTH = 400;
     private final int B_HEIGHT = 300;
     private final int DELAY = 15;
     private Timer timer;
     private Player1 player1;
+    private Boss boss;
     private Missile missile;
     private EnemyMissile enemyMissile;
     private List<Enemy> enemies;
     private boolean inGame;
     private int gameState = 0;
     private int life;
-    private int bossLife = 200;
+    private int bossLife = 100;
 
     private final int[][] pos = {
             {2380, 29}, {2500, 59}, {1380, 89},
@@ -54,10 +54,10 @@ public class Board extends JPanel implements ActionListener {
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 
         player1 = new Player1(PSTART_X, PSTART_Y);
-        missile = new Missile();
+        missile = player1.getMissiles();
         enemyMissile = new EnemyMissile();
         initEnemy();
-        // создание таймера который и будет основой анимации
+        // создание таймера который и будет основой игрового цикла
         timer = new Timer(DELAY, this);
         timer.start();
     }
@@ -75,46 +75,22 @@ public class Board extends JPanel implements ActionListener {
         // Метод который все рисует
     @Override
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
+
         if (inGame) {
             drawObjects(g);
-            drawMissile(g);
-            drawBoss(g);
-            drawEnemyMiss(g);
+            Player1.drawPlayer(g, player1);
+            Missile.drawMissile(g, missile);
+            Boss.drawBoss(g, boss);
+            Enemy.drawEnemy(g, enemies);
+            EnemyMissile.drawEnemyMiss(g, enemyMissile);
         } else if (life == 0) {
             drawGameOver(g);
         } else if (enemies.size() == 0) {
             drawWin(g);
         }
     }
-        // Методы которые, обрисовывают объекты.
-    public void drawEnemyMiss(Graphics g) {
-
-        if (enemyMissile.isVisible()) {
-
-            g.drawImage(enemyMissile.getImage(), enemyMissile.getX(),
-                    enemyMissile.getY(), this);
-        }
-    }
-
-    public void drawMissile(Graphics g) {
-
-        if (missile.isVisible()) {
-
-            g.drawImage(missile.getImage(), missile.getX(),
-                    missile.getY(), this);
-        }
-    }
-
-    public void drawBoss(Graphics g) {
-
-        if (boss.isVisible()) {
-
-            g.drawImage(boss.getImage(), boss.getX(), boss.getY(), this);
-        }
-    }
-
+        // Методы которые, обрисовывают объекты. Надо бы их засунуть в классы. Не вышло
     private void drawWin(Graphics g) {
 
         String winMessage = "Yo Win";
@@ -129,32 +105,6 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void drawObjects(Graphics g) {
-
-        if (player1.isVisible()) {
-
-            g.drawImage(player1.getImage(), player1.getX(),
-                    player1.getY(), this);
-        }
-
-       // List<EnemyMissile> eMissiles = enemies.get()
-        List<Missile> missiles = player1.getMissiles();
-        for (Missile missile : missiles) {
-
-            if (missile.isVisible()) {
-
-                g.drawImage(missile.getImage(), missile.getX(),
-                        missile.getY(), this);
-            }
-        }
-
-        for (Enemy enemy : enemies) {
-
-            if (enemy.isVisible()) {
-
-                g.drawImage(enemy.getImage(), enemy.getX(),
-                        enemy.getY(), this);
-            }
-        }
 
         g.setColor(Color.WHITE);
         g.drawString("Enemys left: " + enemies.size(), 5, 15);
@@ -174,101 +124,38 @@ public class Board extends JPanel implements ActionListener {
                 B_HEIGHT / 2);
     }
 //    здесь конец отрисовки графики
+
+    // ИГРОВАЯ ПЕТЛЯ
     @Override
     public void actionPerformed(ActionEvent e) {
 
         inGame();
-        updateEnemy();
-        updateMissiles();
-        updateProtagonist();
-        updateMiss();
-        updateBoss();
-        updateEnMiss();
+        Enemy.updateEnemy(enemies, inGame);
+        Player1.updateProtagonist(player1);
+        Missile.updateMiss(missile);
+        Boss.updateBoss(boss);
+
+        if (boss.getX() == B_WIDTH/2) {
+
+            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
+        }
+        EnemyMissile.updateEnMiss(enemyMissile);
         checkCollisions();
 
-        repaint(); // все рисуется одновременно, потому что мне лень делать по нормальному
+        repaint(); // вызов экшен перформеда
     }
-
+        // Проверка состояния игры
     private void inGame() {
 
         if (!inGame) timer.stop();
-    }
-
-    private void updateBoss() {
-
-        if (boss.isVisible()) {
-
-            boss.move();
-
-            if (boss.getX() == B_WIDTH/2) {
-
-                 enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
-            }
-        }
-    }
-    private void updateMiss() {
-
-        if (missile.isVisible()) {
-
-            missile.moveRight();
-        }
-    }
-
-    private void updateEnMiss() {
-
-        if (enemyMissile.isVisible()) {
-
-            enemyMissile.moveLeft();
-        }
-    }
-    private void updateMissiles() {
-
-        List<Missile> missiles = player1.getMissiles();
-
-        for (int i = 0; i < missiles.size(); i++) {
-
-            Missile missile = missiles.get(i);
-
-            if (missile.isVisible()) {
-
-                missile.moveRight();
-            } else {
-
-                missiles.remove(i);
-            }
-        }
-    }
-
-    private void updateProtagonist() {
-
-        if (player1.isVisible()) player1.move();
-    }
-
-    private void updateEnemy() {
-
-        if (enemies.isEmpty()) {
-
-            inGame = false;
-            return;
-        }
-
-        for (int i = 0; i < enemies.size(); i++) {
-
-            Enemy enemy = enemies.get(i);
-
-            if (enemy.isVisible()) {
-
-                enemy.move();
-            } else {
-
-                enemies.remove(i);
-            }
-        }
     }
     // проверка на получение урона
     public void checkCollisions() {
 
         Rectangle playerRectangle = player1.getBounds();
+        Rectangle missRectangle = missile.getBounds();
+        Rectangle bossRectangle = boss.getBounds();
+        Rectangle enemyMissRect = enemyMissile.getBounds();
         // ПЕРСОНАЖ И ВРАГИ СТАЛКИВАЮТСЯ
         for (Enemy enemy : enemies) {
 
@@ -284,10 +171,6 @@ public class Board extends JPanel implements ActionListener {
                 }
             }
         }
-
-        Rectangle missRectangle = missile.getBounds();
-        Rectangle bossRectangle = boss.getBounds();
-        Rectangle enemyMissRect = enemyMissile.getBounds();
         // ВРАЖЕСКИЕ ПРОЖЕКТАЙЛЫ И ИГРОК
         if (enemyMissRect.intersects(playerRectangle)) {
 
@@ -324,27 +207,11 @@ public class Board extends JPanel implements ActionListener {
         for (Enemy enemy : enemies) {
 
             Rectangle rEnemy = enemy.getBounds();
-
+            if (missile.isVisible()) {
             if (missRectangle.intersects(rEnemy)) {
 
                 missile.setVisible(false);
                 enemy.setVisible(false);
-            }
-        }
-        // ПУЛЕМЕТ И ВРАГИ \УДАЛИТЬ/
-        List<Missile> missileList = player1.getMissiles();
-        for (Missile m : missileList) {
-
-            Rectangle rMiss = m.getBounds();
-
-            for (Enemy enemy : enemies) {
-
-                Rectangle rEnemy = enemy.getBounds();
-
-                if (rMiss.intersects(rEnemy)) {
-
-                    m.setVisible(false);
-                    enemy.setVisible(false);
                 }
             }
         }
@@ -367,13 +234,10 @@ public class Board extends JPanel implements ActionListener {
 
             if (key == KeyEvent.VK_SPACE) {
 
-                if (inGame) {
-
                     if (!missile.isVisible()) {
 
                         missile = new Missile(player1.getX(), player1.getY());
                     }
-                }
             }
         }
     }

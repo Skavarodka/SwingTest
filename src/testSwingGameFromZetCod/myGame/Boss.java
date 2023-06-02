@@ -1,5 +1,6 @@
 package testSwingGameFromZetCod.myGame;
 
+import java.awt.*;
 import java.util.Random;
 
 public class Boss extends Sprite{
@@ -30,14 +31,26 @@ public class Boss extends Sprite{
         if (x == INITIAL_X / 2) {
 
             EnemyMissile a = new EnemyMissile(x + width, y + height / 2);
-
-//            Missile aa = new Missile(x + width, y + height / 2);
-//            aa.moveLeft();
-
             a.moveLeft();
         }
 
         x -= 1;
+    }
+
+    public static void drawBoss(Graphics g, Boss boss) {
+
+        if (boss.isVisible()) {
+
+            g.drawImage(boss.getImage(), boss.getX(), boss.getY(), null);
+        }
+    }
+
+    public static void updateBoss(Boss boss) {
+
+        if (boss.isVisible()) {
+
+            boss.move();
+        }
     }
 
 }

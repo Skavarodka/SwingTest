@@ -1,6 +1,8 @@
 package testSwingGameFromZetCod.myGame;
 
 
+import java.awt.*;
+import java.util.List;
 
 public class Enemy extends Sprite {
 
@@ -26,5 +28,39 @@ public class Enemy extends Sprite {
             x = INITIAL_X;
         }
         x -= 1;
+    }
+
+    public static void drawEnemy(Graphics g, List<Enemy> enemies) {
+
+        for (Enemy enemy : enemies) {
+
+            if (enemy.isVisible()) {
+
+                g.drawImage(enemy.getImage(), enemy.getX(),
+                        enemy.getY(), null);
+            }
+        }
+    }
+
+    protected static void updateEnemy(List<Enemy> enemies, boolean inGame) {
+
+        if (enemies.isEmpty()) {
+
+            inGame = false;
+            return;
+        }
+
+        for (int i = 0; i < enemies.size(); i++) {
+
+            Enemy enemy = enemies.get(i);
+
+            if (enemy.isVisible()) {
+
+                enemy.move();
+            } else {
+
+                enemies.remove(i);
+            }
+        }
     }
 }
