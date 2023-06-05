@@ -2,6 +2,7 @@ package testSwingGameFromZetCod.myGame;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.List;
 
 public class Boss extends Sprite{
 
@@ -45,11 +46,38 @@ public class Boss extends Sprite{
         }
     }
 
+    public static void drawBossList(Graphics g, List<Boss> bossList) {
+
+        for (Boss boss : bossList) {
+
+            if (boss.isVisible()) {
+
+                g.drawImage(boss.getImage(), boss.getX(), boss.getY(), null);
+            }
+        }
+    }
+
     public static void updateBoss(Boss boss) {
 
         if (boss.isVisible()) {
 
             boss.move();
+        }
+    }
+
+    public void updateBossList(List<Boss> bossList) {
+
+        for (int i = 0; i < bossList.size(); i++) {
+
+            Boss boss = bossList.get(i);
+
+            if (boss.isVisible()) {
+
+                boss.move();
+            } else {
+
+                bossList.remove(i);
+            }
         }
     }
 

@@ -25,7 +25,7 @@ public class EnemyMissile extends Missile {
     @Override
     public void moveLeft() {
 
-        x -= 5;
+        x -= 8;
 
         if (x < 0) {
 

@@ -22,26 +22,34 @@ public class Board extends JPanel implements ActionListener {
     private Missile missile;
     private EnemyMissile enemyMissile;
     private List<Enemy> enemies;
+    private DrawMyObj drawMyObj;
     private boolean inGame;
     private int gameState = 0;
     private int life;
-    private int bossLife = 100;
+    private int bossLife = 50;
+    private List<Boss> bossList;
 
     private final int[][] pos = {
-            {2380, 29}, {2500, 59}, {1380, 89},
-            {780, 109}, {580, 139}, {680, 239},
-            {790, 259}, {760, 50}, {790, 150},
-            {980, 209}, {560, 45}, {510, 70},
-            {930, 159}, {590, 80}, {530, 60},
-            {940, 59}, {990, 30}, {920, 200},
-            {900, 259}, {660, 50}, {540, 90},
-            {810, 220}, {860, 20}, {740, 180},
+            {1900, 29}, {2100, 59}, {1380, 89},
+//            {780, 109}, {580, 139}, {680, 239},
+//            {790, 259}, {760, 50}, {790, 150},
+//            {980, 209}, {560, 45}, {510, 70},
+//            {930, 159}, {590, 80}, {530, 60},
+//            {940, 59}, {990, 30}, {920, 200},
+//            {900, 259}, {660, 50}, {540, 90},
+//            {810, 220}, {860, 20}, {740, 180},
             {820, 128}, {490, 170}, {700, 30}
     };
 
     public Board() {
 
         initBoard();
+    }
+
+    // Проверка состояния игры
+    private void inGame() {
+
+        if (!inGame) timer.stop();
     }
 
     private void initBoard() {
@@ -52,6 +60,8 @@ public class Board extends JPanel implements ActionListener {
         inGame = true;
         life = 100;
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
+
+        drawMyObj = new DrawMyObj(this);
 
         player1 = new Player1(PSTART_X, PSTART_Y);
         missile = player1.getMissiles();
@@ -64,8 +74,14 @@ public class Board extends JPanel implements ActionListener {
 
     public void initEnemy() {
 
-        boss = new Boss(B_WIDTH, B_HEIGHT/2);
+        boss = new Boss(B_WIDTH*3, B_HEIGHT/2);
         enemies = new ArrayList<>();
+        bossList = new ArrayList<>();
+
+        for (int[] a : pos) {
+
+            bossList.add(new Boss(a[0], a[1]));
+        }
 
         for (int[] p : pos) {
 
@@ -78,50 +94,27 @@ public class Board extends JPanel implements ActionListener {
         super.paintComponent(g);
 
         if (inGame) {
-            drawObjects(g);
+            drawUI(g);
             Player1.drawPlayer(g, player1);
             Missile.drawMissile(g, missile);
+            Boss.drawBossList(g,bossList);
             Boss.drawBoss(g, boss);
             Enemy.drawEnemy(g, enemies);
             EnemyMissile.drawEnemyMiss(g, enemyMissile);
-        } else if (life == 0) {
-            drawGameOver(g);
-        } else if (enemies.size() == 0) {
-            drawWin(g);
+        } else if (life == 0){
+            drawMyObj.drawGameOver(g); // хрен какая-то надо переделывать со счетчиком стадий
+        }
+        if (enemies.size() == 0) {
+            inGame = false;
+            drawMyObj.drawWin(g);
         }
     }
         // Методы которые, обрисовывают объекты. Надо бы их засунуть в классы. Не вышло
-    private void drawWin(Graphics g) {
-
-        String winMessage = "Yo Win";
-        Font font = new Font("Magneto", Font.BOLD, 17);
-        FontMetrics fontMetrics = getFontMetrics(font);
-
-        g.setColor(Color.WHITE);
-        g.setFont(font);
-        g.drawString(winMessage,
-                (B_WIDTH - fontMetrics.stringWidth(winMessage)) / 2,
-                B_HEIGHT / 2);
-    }
-
-    private void drawObjects(Graphics g) {
+    private void drawUI(Graphics g) {
 
         g.setColor(Color.WHITE);
         g.drawString("Enemys left: " + enemies.size(), 5, 15);
         g.drawString("Life: " + life, 95, 15);
-    }
-
-    private void drawGameOver(Graphics g) {
-
-        String gameOverString = "Game Over";
-        Font font = new Font("Magneto", Font.BOLD, 17);
-        FontMetrics fontMetrics = getFontMetrics(font);
-
-        g.setColor(Color.WHITE);
-        g.setFont(font);
-        g.drawString(gameOverString,
-                (B_WIDTH - fontMetrics.stringWidth(gameOverString)) / 2,
-                B_HEIGHT / 2);
     }
 //    здесь конец отрисовки графики
 
@@ -130,10 +123,26 @@ public class Board extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         inGame();
+
+        if (life == 0) {
+
+            inGame = false;
+            return;
+        }
+
         Enemy.updateEnemy(enemies, inGame);
         Player1.updateProtagonist(player1);
         Missile.updateMiss(missile);
         Boss.updateBoss(boss);
+        boss.updateBossList(bossList);
+
+        for (Boss boss1 : bossList) {
+
+            if (boss1.getX() == B_WIDTH/2) {
+
+                enemyMissile = new EnemyMissile(boss1.getX(),boss1.getY());
+            }
+        }
 
         if (boss.getX() == B_WIDTH/2) {
 
@@ -155,11 +164,7 @@ public class Board extends JPanel implements ActionListener {
 
         repaint(); // вызов экшен перформеда
     }
-        // Проверка состояния игры
-    private void inGame() {
 
-        if (!inGame) timer.stop();
-    }
     // проверка на получение урона
     public void checkCollisions() {
 
