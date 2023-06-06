@@ -16,6 +16,19 @@ public class DrawMyObj {
         this.board = board;
     }
 
+    public void drawStart(Graphics g) {
+
+        String winMessage = "Press Enter to start";
+        Font font = new Font("Magneto", Font.BOLD, 17);
+        FontMetrics fontMetrics = board.getFontMetrics(font);
+
+        g.setColor(Color.WHITE);
+        g.setFont(font);
+        g.drawString(winMessage,
+                (B_WIDTH - fontMetrics.stringWidth(winMessage)) / 2,
+                B_HEIGHT / 2);
+    }
+
     public void drawWin(Graphics g) {
 
         String winMessage = "Yo Win";

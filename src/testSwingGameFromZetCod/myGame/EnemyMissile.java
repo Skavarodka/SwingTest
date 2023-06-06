@@ -25,7 +25,7 @@ public class EnemyMissile extends Missile {
     @Override
     public void moveLeft() {
 
-        x -= 8;
+        x -= 9;
 
         if (x < 0) {
 
@@ -44,9 +44,12 @@ public class EnemyMissile extends Missile {
 
     protected static void updateEnMiss(EnemyMissile enemyMissile) {
 
-        if (enemyMissile.isVisible()) {
+        if (enemyMissile.getX() != 0) {
 
             enemyMissile.moveLeft();
+        } else {
+
+            enemyMissile.setVisible(false);
         }
     }
 }

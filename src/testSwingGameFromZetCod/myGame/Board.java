@@ -23,8 +23,7 @@ public class Board extends JPanel implements ActionListener {
     private EnemyMissile enemyMissile;
     private List<Enemy> enemies;
     private DrawMyObj drawMyObj;
-    private boolean inGame;
-    private int gameState = 0;
+    private int gameState = 1; // 0- игра // 1 экран нажми кнопку // 2 продул // 3 победил
     private int life;
     private int bossLife = 50;
     private List<Boss> bossList;
@@ -49,7 +48,7 @@ public class Board extends JPanel implements ActionListener {
     // Проверка состояния игры
     private void inGame() {
 
-        if (!inGame) timer.stop();
+        if (gameState > 0) timer.stop();
     }
 
     private void initBoard() {
@@ -57,7 +56,7 @@ public class Board extends JPanel implements ActionListener {
         addKeyListener(new MyKeyAdapter());
         setBackground(Color.BLACK);
         setFocusable(true);
-        inGame = true;
+        gameState = 1;
         life = 100;
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 
@@ -69,7 +68,8 @@ public class Board extends JPanel implements ActionListener {
         initEnemy();
         // создание таймера который и будет основой игрового цикла
         timer = new Timer(DELAY, this);
-        timer.start();
+        timer.restart();
+//        timer.start();
     }
 
     public void initEnemy() {
@@ -93,7 +93,9 @@ public class Board extends JPanel implements ActionListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (inGame) {
+        if (gameState == 1) drawMyObj.drawStart(g);
+
+        if (gameState == 0) {
             drawUI(g);
             Player1.drawPlayer(g, player1);
             Missile.drawMissile(g, missile);
@@ -104,8 +106,9 @@ public class Board extends JPanel implements ActionListener {
         } else if (life == 0){
             drawMyObj.drawGameOver(g); // хрен какая-то надо переделывать со счетчиком стадий
         }
+
         if (enemies.size() == 0) {
-            inGame = false;
+            gameState = 3;
             drawMyObj.drawWin(g);
         }
     }
@@ -125,12 +128,11 @@ public class Board extends JPanel implements ActionListener {
         inGame();
 
         if (life == 0) {
-
-            inGame = false;
+            gameState = 2;
             return;
         }
 
-        Enemy.updateEnemy(enemies, inGame);
+        Enemy.updateEnemy(enemies);
         Player1.updateProtagonist(player1);
         Missile.updateMiss(missile);
         Boss.updateBoss(boss);
@@ -183,7 +185,7 @@ public class Board extends JPanel implements ActionListener {
 
                     player1.setVisible(false);
                     enemy.setVisible(false);
-                    inGame = false;
+                    gameState = 2;
                 }
             }
         }
@@ -195,7 +197,7 @@ public class Board extends JPanel implements ActionListener {
 
                 player1.setVisible(false);
                 boss.setVisible(false);
-                inGame = false;
+                gameState = 2;
             }
         }
         // БОСС И ПРОЖЕКТАЙЛЫ ИГРОКА
@@ -216,7 +218,7 @@ public class Board extends JPanel implements ActionListener {
 
                 player1.setVisible(false);
                 boss.setVisible(false);
-                inGame = false;
+                gameState = 2;
             }
         }
         // ВРАГИ И ПРОЖЕКТАЙЛЫ ИГРОКА
@@ -247,6 +249,19 @@ public class Board extends JPanel implements ActionListener {
             player1.keyPressed(e);
 
             int key = e.getKeyCode();
+
+            if (key == KeyEvent.VK_R) {
+
+                timer.stop();
+                initBoard();
+            }
+
+            if (key == KeyEvent.VK_ENTER) {
+
+                gameState = 0;
+                timer.start();
+                System.out.println(timer.getDelay());
+            }
 
             if (key == KeyEvent.VK_SPACE) {
 

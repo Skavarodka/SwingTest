@@ -42,11 +42,10 @@ public class Enemy extends Sprite {
         }
     }
 
-    protected static void updateEnemy(List<Enemy> enemies, boolean inGame) {
+    protected static void updateEnemy(List<Enemy> enemies) {
 
         if (enemies.isEmpty()) {
 
-            inGame = false;
             return;
         }
 
