@@ -4,10 +4,11 @@ import java.awt.*;
 import java.util.Random;
 import java.util.List;
 
-public class Boss extends Sprite{
+public class Boss extends Sprite {
 
     Random thrnd = new Random();
-    public Boss (int x, int y) {
+
+    public Boss(int x, int y) {
 
         super(x, y);
         initBoss();
@@ -15,7 +16,7 @@ public class Boss extends Sprite{
 
     private void initBoss() {
 
-        String s = "src/images/bomb.png";
+        String s = "src/aimage/Boss.png";
         loadImage(s);
         getImageDimension();
     }
@@ -25,16 +26,9 @@ public class Boss extends Sprite{
         //
         if (x < 0) {
 
-            x = INITIAL_X;
-            y = thrnd.nextInt(INITIAL_Y-this.height);
+            x = INITIAL_X + thrnd.nextInt(100);
+            y = thrnd.nextInt(INITIAL_Y - this.height);
         }
-
-        if (x == INITIAL_X / 2) {
-
-            EnemyMissile a = new EnemyMissile(x + width, y + height / 2);
-            a.moveLeft();
-        }
-
         x -= 1;
     }
 
@@ -65,7 +59,7 @@ public class Boss extends Sprite{
         }
     }
 
-    public void updateBossList(List<Boss> bossList) {
+    public static void updateBossList(List<Boss> bossList) {
 
         for (int i = 0; i < bossList.size(); i++) {
 
@@ -80,5 +74,4 @@ public class Boss extends Sprite{
             }
         }
     }
-
 }

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
-public class Board extends JPanel {
+public class Board1 extends JPanel {
     //public Board(){}
 
     //далее код для отрисовки пончика

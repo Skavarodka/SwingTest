@@ -27,7 +27,7 @@ public class Player1 extends Sprite {
     private void initProtagonist() {
 
         missile = new Missile();
-        loadImage("src/testSwingGameFromZetCod/skelet/snake/resources/apple.png");
+        loadImage("src/aimage/player.png");
         getImageDimension();
     }
 

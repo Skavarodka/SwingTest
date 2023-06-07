@@ -12,31 +12,38 @@ import java.util.List;
 public class Board extends JPanel implements ActionListener {
 
     private final int PSTART_X = 30;
-    private final int PSTART_Y = 29;
+    private final int PSTART_Y = 150;
     private final int B_WIDTH = 400;
     private final int B_HEIGHT = 300;
     private final int DELAY = 16;
     private Timer timer;
     private Player1 player1;
-    private Boss boss;
     private Missile missile;
     private EnemyMissile enemyMissile;
     private List<Enemy> enemies;
     private DrawMyObj drawMyObj;
     private int gameState = 1; // 0- игра // 1 экран нажми кнопку // 2 продул // 3 победил
     private int life;
-    private int bossLife = 50;
+    //private int bossLife = 50;
     private List<Boss> bossList;
+    private final int[][] bospos = {
+            {B_WIDTH+100, 40}, {B_WIDTH+600, B_HEIGHT/2}, {830, 203},
+            {1500, 45}, {902, 129}, {671, 258},
+            {742, 281}, {B_WIDTH, B_HEIGHT/2}, {1111, 78},
+            {999, 100}, {1743, 203}, {1099, B_HEIGHT},
+            {700, 150}, {750, 111}, {800, 121},
+            {850, 131}, {921, 152}, {1212, 160}
+    };
 
     private final int[][] pos = {
             {1900, 29}, {2100, 59}, {1380, 89},
-//            {780, 109}, {580, 139}, {680, 239},
-//            {790, 259}, {760, 50}, {790, 150},
-//            {980, 209}, {560, 45}, {510, 70},
-//            {930, 159}, {590, 80}, {530, 60},
-//            {940, 59}, {990, 30}, {920, 200},
-//            {900, 259}, {660, 50}, {540, 90},
-//            {810, 220}, {860, 20}, {740, 180},
+            {780, 109}, {580, 139}, {680, 239},
+            {790, 259}, {764, 50}, {790, 150},
+            {980, 209}, {561, 45}, {510, 70},
+            {930, 159}, {590, 80}, {530, 60},
+            {940, 59}, {990, 30}, {920, 200},
+            {900, 259}, {660, 50}, {540, 90},
+            {810, 220}, {860, 20}, {740, 180},
             {820, 128}, {490, 170}, {700, 30}
     };
 
@@ -74,11 +81,11 @@ public class Board extends JPanel implements ActionListener {
 
     public void initEnemy() {
 
-        boss = new Boss(B_WIDTH*3, B_HEIGHT/2);
+        //boss = new Boss(B_WIDTH*3, B_HEIGHT/2);
         enemies = new ArrayList<>();
         bossList = new ArrayList<>();
 
-        for (int[] a : pos) {
+        for (int[] a : bospos) {
 
             bossList.add(new Boss(a[0], a[1]));
         }
@@ -100,14 +107,14 @@ public class Board extends JPanel implements ActionListener {
             Player1.drawPlayer(g, player1);
             Missile.drawMissile(g, missile);
             Boss.drawBossList(g,bossList);
-            Boss.drawBoss(g, boss);
+            //Boss.drawBoss(g, boss);
             Enemy.drawEnemy(g, enemies);
             EnemyMissile.drawEnemyMiss(g, enemyMissile);
-        } else if (life == 0){
+        } else if (life == 0) {
             drawMyObj.drawGameOver(g); // хрен какая-то надо переделывать со счетчиком стадий
         }
 
-        if (enemies.size() == 0) {
+        if (bossList.size() == 0) {
             gameState = 3;
             drawMyObj.drawWin(g);
         }
@@ -116,7 +123,7 @@ public class Board extends JPanel implements ActionListener {
     private void drawUI(Graphics g) {
 
         g.setColor(Color.WHITE);
-        g.drawString("Enemys left: " + enemies.size(), 5, 15);
+        g.drawString("Enemys left: " + bossList.size(), 5, 15);
         g.drawString("Life: " + life, 95, 15);
     }
 //    здесь конец отрисовки графики
@@ -135,8 +142,8 @@ public class Board extends JPanel implements ActionListener {
         Enemy.updateEnemy(enemies);
         Player1.updateProtagonist(player1);
         Missile.updateMiss(missile);
-        Boss.updateBoss(boss);
-        boss.updateBossList(bossList);
+        //Boss.updateBoss(boss);
+        Boss.updateBossList(bossList);
 
         for (Boss boss1 : bossList) {
 
@@ -146,20 +153,20 @@ public class Board extends JPanel implements ActionListener {
             }
         }
 
-        if (boss.getX() == B_WIDTH/2) {
-
-            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
-        }
-
-        if (boss.getX() == 350) {
-
-            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
-        }
-
-        if (boss.getX() == 100) {
-
-            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
-        }
+//        if (boss.getX() == B_WIDTH/2) {
+//
+//            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
+//        }
+//
+//        if (boss.getX() == 350) {
+//
+//            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
+//        }
+//
+//        if (boss.getX() == 100) {
+//
+//            enemyMissile = new EnemyMissile(boss.getX(),boss.getY());
+//        }
 
         EnemyMissile.updateEnMiss(enemyMissile);
         checkCollisions();
@@ -172,8 +179,38 @@ public class Board extends JPanel implements ActionListener {
 
         Rectangle playerRectangle = player1.getBounds();
         Rectangle missRectangle = missile.getBounds();
-        Rectangle bossRectangle = boss.getBounds();
+       // Rectangle bossRectangle = boss.getBounds();
         Rectangle enemyMissRect = enemyMissile.getBounds();
+
+        //PLAYER MISS & BOSS
+        for (Boss boss1 : bossList) {
+
+            Rectangle rBossList = boss1.getBounds();
+
+            if (missile.isVisible()) {
+
+                if (missRectangle.intersects(rBossList)) {
+
+                    missile.setVisible(false);
+                    boss1.setVisible(false);
+                }
+            }
+        }
+        //PLAYER И ВРАГИ ИЗ СПИСКА BOSS
+        for (Boss boss1 : bossList) {
+
+            Rectangle rBossList = boss1.getBounds();
+
+            if (playerRectangle.intersects(rBossList)) {
+                life--;
+                if (life == 0) {
+
+                    player1.setVisible(false);
+                    boss1.setVisible(false);
+                    gameState = 2;
+                }
+            }
+        }
         // ПЕРСОНАЖ И ВРАГИ СТАЛКИВАЮТСЯ
         for (Enemy enemy : enemies) {
 
@@ -196,40 +233,41 @@ public class Board extends JPanel implements ActionListener {
             if (life == 0) {
 
                 player1.setVisible(false);
-                boss.setVisible(false);
+                //boss.setVisible(false);
                 gameState = 2;
             }
         }
-        // БОСС И ПРОЖЕКТАЙЛЫ ИГРОКА
-        if (missRectangle.intersects(bossRectangle)) {
-
-            bossLife--;
-            missile.setVisible(false);
-            if (bossLife == 0) {
-
-                boss.setVisible(false);
-            }
-        }
-        // БОСС И ИГРОК
-        if (playerRectangle.intersects(bossRectangle)) {
-
-            life--;
-            if (life == 0) {
-
-                player1.setVisible(false);
-                boss.setVisible(false);
-                gameState = 2;
-            }
-        }
+//        // БОСС И ПРОЖЕКТАЙЛЫ ИГРОКА
+//        if (missRectangle.intersects(bossRectangle)) {
+//
+//            bossLife--;
+//            missile.setVisible(false);
+//            if (bossLife == 0) {
+//
+//                boss.setVisible(false);
+//            }
+//        }
+//        // БОСС И ИГРОК
+//        if (playerRectangle.intersects(bossRectangle)) {
+//
+//            life--;
+//            if (life == 0) {
+//
+//                player1.setVisible(false);
+//                boss.setVisible(false);
+//                gameState = 2;
+//            }
+//        }
         // ВРАГИ И ПРОЖЕКТАЙЛЫ ИГРОКА
         for (Enemy enemy : enemies) {
 
             Rectangle rEnemy = enemy.getBounds();
             if (missile.isVisible()) {
-            if (missRectangle.intersects(rEnemy)) {
 
-                missile.setVisible(false);
-                enemy.setVisible(false);
+                if (missRectangle.intersects(rEnemy)) {
+
+                    missile.setVisible(false);
+                    enemy.setVisible(false);
                 }
             }
         }
@@ -265,10 +303,10 @@ public class Board extends JPanel implements ActionListener {
 
             if (key == KeyEvent.VK_SPACE) {
 
-                    if (!missile.isVisible()) {
+                if (!missile.isVisible()) {
 
-                        missile = new Missile(player1.getX(), player1.getY());
-                    }
+                    missile = new Missile(player1.getX(), player1.getY());
+                }
             }
         }
     }

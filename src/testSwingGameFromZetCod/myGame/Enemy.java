@@ -3,10 +3,11 @@ package testSwingGameFromZetCod.myGame;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Random;
 
 public class Enemy extends Sprite {
 
-
+    Random thrnd = new Random();
 
     public Enemy (int x, int y) {
 
@@ -16,7 +17,7 @@ public class Enemy extends Sprite {
 
     private void initEnemy() {
 
-        loadImage("src/testSwingGameFromZetCod/skelet/snake/resources/camalet.png");
+        loadImage("src/aimage/asteroid.png");
         getImageDimension();
     }
 
@@ -25,7 +26,8 @@ public class Enemy extends Sprite {
         //
         if (x < 0) {
 
-            x = INITIAL_X;
+            x = INITIAL_X + thrnd.nextInt(100);
+            y = thrnd.nextInt(INITIAL_Y - this.height);
         }
         x -= 1;
     }
