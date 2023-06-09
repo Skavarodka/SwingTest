@@ -22,7 +22,7 @@ public class Missile extends Sprite {
 
     private void initMissile() {
 
-        loadImage("src/testSwingGameFromZetCod/skelet/snake/resources/head.png");
+        loadImage("src/aimage/misile.png");
         getImageDimension();
     }
 

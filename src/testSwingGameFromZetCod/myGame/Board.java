@@ -32,7 +32,9 @@ public class Board extends JPanel implements ActionListener {
             {742, 281}, {B_WIDTH, B_HEIGHT/2}, {1111, 78},
             {999, 100}, {1743, 203}, {1099, B_HEIGHT},
             {700, 150}, {750, 111}, {800, 121},
-            {850, 131}, {921, 152}, {1212, 160}
+            {850, 131}, {921, 152}, {1212, 160},
+            {1281, 50}, {1322, 121}, {1400, 200},
+            {1450, 250}, {1550, 112}, {1601, 43}
     };
 
     private final int[][] pos = {
@@ -305,7 +307,7 @@ public class Board extends JPanel implements ActionListener {
 
                 if (!missile.isVisible()) {
 
-                    missile = new Missile(player1.getX(), player1.getY());
+                    missile = new Missile(player1.getX()+player1.width, player1.getY()+player1.height/2);
                 }
             }
         }

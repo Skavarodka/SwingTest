@@ -45,7 +45,7 @@ public class Player1 extends Sprite {
 
         return missile;
     }
-
+// НЕ РАБОТАЕТ
     public void fire() {
 
         //missiles.add(new Missile(x + width, y + height / 2));

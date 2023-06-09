@@ -54,5 +54,7 @@ public class DrawMyObj {
         g.drawString(gameOverString,
                 (B_WIDTH - fontMetrics.stringWidth(gameOverString)) / 2,
                 B_HEIGHT / 2);
+        g.drawString("Pres R to restart", (B_WIDTH - fontMetrics.stringWidth(gameOverString))/2,
+                B_HEIGHT/2 - 150);
     }
 }

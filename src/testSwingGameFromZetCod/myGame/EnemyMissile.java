@@ -18,7 +18,7 @@ public class EnemyMissile extends Missile {
 
     private void initMissile() {
 
-        loadImage("src/testSwingGameFromZetCod/skelet/snake/resources/head.png");
+        loadImage("src/aimage/emisile.png");
         getImageDimension();
     }
 
