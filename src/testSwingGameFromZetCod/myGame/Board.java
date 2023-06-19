@@ -106,6 +106,7 @@ public class Board extends JPanel implements ActionListener {
 
         if (gameState == 0) {
             drawUI(g);
+            drawMyObj.drawStar(g);
             Player1.drawPlayer(g, player1);
             Missile.drawMissile(g, missile);
             Boss.drawBossList(g,bossList);
